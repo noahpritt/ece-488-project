@@ -408,8 +408,9 @@ public class ImageProcessing extends Application {
                     //uploadedImageGrayscale = SwingFXUtils.toFXImage(bufferedGrayscaleImage, null);
                     //uploadedImageViewGrayscale = new ImageView(uploadedImageGrayscale); 
                     
-                    
+                    System.out.println("image as buffered: " + image_as_buffered);
                     int[] brightnessData = ColorHistogram.GenerateColorHistogram(image_as_buffered);
+                    System.out.println("made it here, brightness data is " + brightnessData + " which is not null");
                     
                     // Generate color histogram
 
@@ -421,7 +422,7 @@ public class ImageProcessing extends Application {
                     colorHistoOne.setBarGap(0);
          
                     xAxis.setLabel("Pixel Brightness");       
-                    yAxis.setLabel("Pixel Frequency");
+                    yAxis.setLabel("Frequency");
          
                     XYChart.Series series1 = new XYChart.Series();
                     for (int i = 0; i < brightnessData.length; i++)
@@ -436,53 +437,53 @@ public class ImageProcessing extends Application {
                     
                     /////// Probability color histogram:
                     
-                    double[] intensityDataProbabilities = GrayscaleHistogram.GenerateProbabilityHistogram(image_as_buffered);
+                    double[] intensityDataProbabilities = ColorHistogram.GenerateProbabilityHistogram(image_as_buffered);
                     
                     // Generate histogram
 
                     final CategoryAxis xAxisTwo = new CategoryAxis();
                     final NumberAxis yAxisTwo = new NumberAxis();
-                    grayHistoTwo = 
+                    colorHistoTwo = 
                         new BarChart<>(xAxisTwo,yAxisTwo);
-                    grayHistoTwo.setCategoryGap(0);
-                    grayHistoTwo.setBarGap(0);
+                    colorHistoTwo.setCategoryGap(0);
+                    colorHistoTwo.setBarGap(0);
          
-                    xAxisTwo.setLabel("Pixel Intensity");       
-                    yAxisTwo.setLabel("Pixel Probability");
+                    xAxisTwo.setLabel("Pixel Brightness");       
+                    yAxisTwo.setLabel("Probability");
          
                     XYChart.Series series2 = new XYChart.Series();
-                    for (int i = 0; i < intensityData.length; i++)
+                    for (int i = 0; i < intensityDataProbabilities.length; i++)
                     {
                         series2.getData().add(new XYChart.Data( Integer.toString(i), intensityDataProbabilities[i]));
                     }
          
-                    grayHistoTwo.getData().addAll(series2);
+                    colorHistoTwo.getData().addAll(series2);
                     
                     
                     
                     /////// Cumulative probability histogram:
                     
-                    double[] intensityDataCumulativeProbabilities = GrayscaleHistogram.GenerateCumulativeProbabilityHistogram(image_as_buffered);
+                    double[] brightnessDataCumulativeProbabilities = ColorHistogram.GenerateCumulativeProbabilityHistogram(image_as_buffered);
                     
                     // Generate histogram
 
                     final CategoryAxis xAxisThree = new CategoryAxis();
                     final NumberAxis yAxisThree = new NumberAxis();
-                    grayHistoThree = 
+                    colorHistoThree = 
                         new BarChart<>(xAxisThree,yAxisThree);
-                    grayHistoThree.setCategoryGap(0);
-                    grayHistoThree.setBarGap(0);
+                    colorHistoThree.setCategoryGap(0);
+                    colorHistoThree.setBarGap(0);
          
-                    xAxisThree.setLabel("Pixel Intensity");       
+                    xAxisThree.setLabel("Pixel Brightness");       
                     yAxisThree.setLabel("Cumulative Probability");
          
                     XYChart.Series series3 = new XYChart.Series();
-                    for (int i = 0; i < intensityData.length; i++)
+                    for (int i = 0; i < brightnessData.length; i++)
                     {
-                        series3.getData().add(new XYChart.Data( Integer.toString(i), intensityDataCumulativeProbabilities[i]));
+                        series3.getData().add(new XYChart.Data( Integer.toString(i), brightnessDataCumulativeProbabilities[i]));
                     }
          
-                    grayHistoThree.getData().addAll(series3);
+                    colorHistoThree.getData().addAll(series3);
                     
                     
                     
@@ -505,7 +506,7 @@ public class ImageProcessing extends Application {
          
                     slider.setBlockIncrement(10);
                     
-                    slider.valueProperty().addListener(new ChangeListener() {
+      /*              slider.valueProperty().addListener(new ChangeListener() {
 
                         @Override
                         public void changed(ObservableValue arg0, Object arg1, Object arg2) {
@@ -514,11 +515,11 @@ public class ImageProcessing extends Application {
                         
                         // Take the contrast amount entered and multiply it by the cumulative probability value for each
                         // pixel intensity
-                        int[] adjusted_for_contrast = new int [intensityDataCumulativeProbabilities.length];
-                        for(int p = 0; p < intensityDataCumulativeProbabilities.length; p++)
+                        int[] adjusted_for_contrast = new int [brightnessDataCumulativeProbabilities.length];
+                        for(int p = 0; p < brightnessDataCumulativeProbabilities.length; p++)
                         {
                             //System.out.println("this cumulative: " + intensityDataCumulativeProbabilities[p] + "; " + intensityDataCumulativeProbabilities[p] * contrast_amount);
-                            double product_unrounded = intensityDataCumulativeProbabilities[p] * contrast_amount;
+                            double product_unrounded = brightnessDataCumulativeProbabilities[p] * contrast_amount;
                             adjusted_for_contrast[p] = (int) Math.floor(product_unrounded);
                             //System.out.println("this rounded: " + adjusted_for_contrast[p]);
 
@@ -538,7 +539,7 @@ public class ImageProcessing extends Application {
                     }
                     });
 
-        
+                ***/       
                     
                     
                
@@ -666,6 +667,67 @@ public class ImageProcessing extends Application {
                 image_vbox.getChildren().addAll(adjustedContrastImageView);
             }
             
+                        
+        }
+        
+        
+        
+        if (type == 3)
+        {
+            // output picture title
+            Text histo_1 = new Text("Pixel Intensities vs Pixel Frequencies Histogram:");
+            histo_1.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            histo_1.setVisible(type == 2);
+            image_vbox.getChildren().add(histo_1);
+            image_vbox.getChildren().addAll(colorHistoOne);
+            
+            // Probability Histogram
+            Text histo_2 = new Text("Pixel Intensities vs Pixel Probabilities Histogram:");
+            histo_2.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            histo_2.setVisible(type == 2);
+            image_vbox.getChildren().add(histo_2);
+            image_vbox.getChildren().addAll(colorHistoTwo);
+            
+            // Cumulative Probability Histogram
+            Text histo_3 = new Text("Pixel Intensities vs Pixel Cumulative Probabilities Histogram:");
+            histo_3.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            histo_3.setVisible(type == 2);
+            image_vbox.getChildren().add(histo_3);
+            image_vbox.getChildren().addAll(colorHistoThree);
+            
+            System.out.println("triggered");
+            
+            
+            histo_4 = new Text("Click Slider to Change Contrast:");
+            histo_4.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+            histo_4.setVisible(type == 2);
+            image_vbox.getChildren().add(histo_4);
+             
+            image_vbox.getChildren().addAll(slider);
+/*
+
+                
+            // Final image with adjusted contrast
+            if(adjustedContrastImage != null )
+            {
+                
+                //image_vbox.getChildren().addAll(grayHistoThree);
+                
+
+                Text histo_5 = new Text("Image with Adjusted Contrast:");
+                histo_5.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                histo_5.setVisible(type == 2);
+                image_vbox.getChildren().add(histo_5);
+            
+                adjustedContrastImageView = new ImageView(adjustedContrastImage);
+                image_vbox.getChildren().addAll(adjustedContrastImageView);
+            }
+            else
+            {
+                adjustedContrastImageView = new ImageView(uploadedImageGrayscale);
+                image_vbox.getChildren().addAll(adjustedContrastImageView);
+            }
+   **/         
                         
         }
         

@@ -21,23 +21,24 @@ public class ColorHistogram {
     
     public static int[] GenerateColorHistogram(BufferedImage input)
     {
-        int[] allBrightnesses = new int[100];
+        int[] allBrightnesses = new int[101];
         for (int y = 0; y < input.getHeight(); y++) {
             for (int x = 0; x < input.getWidth(); x++) {
                 int  clr   = input.getRGB(x, y); 
                 int  red   = (clr & 0x00ff0000) >> 16;
                 int  green = (clr & 0x0000ff00) >> 8;
                 int  blue  =  clr & 0x000000ff;
-                int average = (red + green + blue)/3;
                 float[] hsb = Color.RGBtoHSB(red, green, blue, null);
                  //Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
                 float hue = hsb[0];
                 float saturation = hsb[1];
                 float brightness = hsb[2];
+                
                 // Round the brightness to the nearest 0.01
                 float roundedBrightness_float = (float) (Math.round(brightness * 100d) / 100d);
                 int roundedBrightness = (int) (roundedBrightness_float * 100);
-
+                //System.out.println("brightness is " + hsb[2]);
+                //System.out.println("brightness is " + roundedBrightness);
                 allBrightnesses[roundedBrightness] = allBrightnesses[roundedBrightness] + 1;
                 
              }
@@ -47,8 +48,8 @@ public class ColorHistogram {
     
     public static double[] GenerateProbabilityHistogram(BufferedImage input)
     {
-        int[] allBrightnesses = new int[100];
-        double [] allBrightnessProbabilities = new double[100];
+        int[] allBrightnesses = new int[101];
+        double [] allBrightnessProbabilities = new double[101];
         for (int y = 0; y < input.getHeight(); y++) {
             for (int x = 0; x < input.getWidth(); x++) {
                 int  clr   = input.getRGB(x, y); 
@@ -80,31 +81,41 @@ public class ColorHistogram {
     
     public static double[] GenerateCumulativeProbabilityHistogram(BufferedImage input)
     {
-        double[] allIntensities = new double[256];
-        double [] allIntensityProbabilities = new double[256];
+        double[] allBrightnesses = new double[101];
+        double [] allBrightnessProbabilities = new double[101];
         for (int y = 0; y < input.getHeight(); y++) {
             for (int x = 0; x < input.getWidth(); x++) {
                 int  clr   = input.getRGB(x, y); 
                 int  red   = (clr & 0x00ff0000) >> 16;
                 int  green = (clr & 0x0000ff00) >> 8;
                 int  blue  =  clr & 0x000000ff;
-                int average = (red + green + blue)/3;
-                allIntensities[average] =  allIntensities[average] + 1;
+                int average = (red + green + blue)/3;                
+                
+                float[] hsb = Color.RGBtoHSB(red, green, blue, null);
+                 //Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+                float hue = hsb[0];
+                float saturation = hsb[1];
+                float brightness = hsb[2];
+                // Round the brightness to the nearest 0.01
+                float roundedBrightness_float = (float) (Math.round(brightness * 100d) / 100d);
+                int roundedBrightness = (int) (roundedBrightness_float * 100);
+
+                allBrightnesses[roundedBrightness] = allBrightnesses[roundedBrightness] + 1;
              }
         }
         int totalSum = 0;
-        for (int i = 0; i < allIntensities.length; i++)
+        for (int i = 0; i < allBrightnesses.length; i++)
         {
-            totalSum += allIntensities[i];
+            totalSum += allBrightnesses[i];
         }
         double current_probability = 0;
-        for (int i = 0; i < allIntensities.length; i++)
+        for (int i = 0; i < allBrightnesses.length; i++)
         {
-            current_probability += allIntensities[i] / totalSum;
-            allIntensityProbabilities[i] = current_probability;
+            current_probability += allBrightnesses[i] / totalSum;
+            allBrightnessProbabilities[i] = current_probability;
         }
         
-        return allIntensityProbabilities;
+        return allBrightnessProbabilities;
     }
     
     public static BufferedImage AdjustContrast(BufferedImage input, int[] matrix_extries)
@@ -117,9 +128,16 @@ public class ColorHistogram {
                 int  green = (clr & 0x0000ff00) >> 8;
                 int  blue  =  clr & 0x000000ff;
                 int average = (red + green + blue)/3;
+                
+                float[] hsb = Color.RGBtoHSB(red, green, blue, null);
+                 //Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+                float hue = hsb[0];
+                float saturation = hsb[1];
+                float brightness = hsb[2];
+               // hsb[2] = matrix_extries[]
                 //System.out.println("x: " + x + ", y: " + y + ", value: " + matrix_extries[average] + ", original: " + average);
-                int rgb = matrix_extries[average] * 0x00010101;
-                updated_contrast_image.setRGB(x, y, rgb);
+              //  int rgb = matrix_extries[average] * 0x00010101;
+             //   updated_contrast_image.setRGB(x, y, rgb);
                 //System.out.println("final: " + updated_contrast_image.getRGB(x, y));
 
              }
