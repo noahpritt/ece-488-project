@@ -134,7 +134,7 @@ public class ColorHistogram {
                 
                 hsb[2] = matrix_extries[roundedBrightness];
                 // now get it back to decimal form
-                //System.out.println("before converting, it is " + hsb[2]);
+                //My System.out.println("before converting, it is " + hsb[2]);
                 float brightness_float = (float) hsb[2];
                 float divider = (float) 100.0;
                 float converted_brightness = brightness_float / divider;
