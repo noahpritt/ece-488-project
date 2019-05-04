@@ -74,6 +74,10 @@ public class ImageProcessing extends Application {
     Image adjustedContrastImage;
     ImageView adjustedContrastImageView;
     
+    Image adjustedContrastImageColor;
+    ImageView adjustedContrastImageViewColor;
+
+
     Double contrast_amount = 1.0;
     
     boolean picAdded = false;
@@ -496,7 +500,7 @@ public class ImageProcessing extends Application {
                     slider.setMin(0);
          
                     // The maximum value.
-                    slider.setMax(500);
+                    slider.setMax(100);
          
                     // Current value
                     slider.setValue(80);
@@ -506,7 +510,7 @@ public class ImageProcessing extends Application {
          
                     slider.setBlockIncrement(10);
                     
-      /*              slider.valueProperty().addListener(new ChangeListener() {
+                    slider.valueProperty().addListener(new ChangeListener() {
 
                         @Override
                         public void changed(ObservableValue arg0, Object arg1, Object arg2) {
@@ -524,22 +528,18 @@ public class ImageProcessing extends Application {
                             //System.out.println("this rounded: " + adjusted_for_contrast[p]);
 
                         }
-                        
-;
-    
-                        
-        
-                        BufferedImage black_and_white_as_buffered = SwingFXUtils.fromFXImage(uploadedImageGrayscale, null);
-                        BufferedImage bufferedContrastImage = GrayscaleHistogram.AdjustContrast(black_and_white_as_buffered, adjusted_for_contrast);
+                                      
+                        BufferedImage buffered_color = SwingFXUtils.fromFXImage(uploadedImage, null);
+                        BufferedImage bufferedContrastImage = ColorHistogram.AdjustContrast(buffered_color, adjusted_for_contrast);
                         //GrayscaleHistogram.Compare(black_and_white_as_buffered, bufferedContrastImage);
-                        adjustedContrastImage = SwingFXUtils.toFXImage(bufferedContrastImage, null);
+                        adjustedContrastImageColor = SwingFXUtils.toFXImage(bufferedContrastImage, null);
                        
                         refreshUi(border);
 
                     }
                     });
 
-                ***/       
+                      
                     
                     
                
@@ -704,11 +704,11 @@ public class ImageProcessing extends Application {
             image_vbox.getChildren().add(histo_4);
              
             image_vbox.getChildren().addAll(slider);
-/*
+
 
                 
             // Final image with adjusted contrast
-            if(adjustedContrastImage != null )
+            if(adjustedContrastImageColor != null )
             {
                 
                 //image_vbox.getChildren().addAll(grayHistoThree);
@@ -719,15 +719,15 @@ public class ImageProcessing extends Application {
                 histo_5.setVisible(type == 2);
                 image_vbox.getChildren().add(histo_5);
             
-                adjustedContrastImageView = new ImageView(adjustedContrastImage);
-                image_vbox.getChildren().addAll(adjustedContrastImageView);
+                adjustedContrastImageViewColor = new ImageView(adjustedContrastImageColor);
+                image_vbox.getChildren().addAll(adjustedContrastImageViewColor);
             }
             else
             {
-                adjustedContrastImageView = new ImageView(uploadedImageGrayscale);
-                image_vbox.getChildren().addAll(adjustedContrastImageView);
+                adjustedContrastImageViewColor = new ImageView(uploadedImage);
+                image_vbox.getChildren().addAll(adjustedContrastImageViewColor);
             }
-   **/         
+        
                         
         }
         

@@ -128,16 +128,22 @@ public class ColorHistogram {
                 int  green = (clr & 0x0000ff00) >> 8;
                 int  blue  =  clr & 0x000000ff;
                 int average = (red + green + blue)/3;
-                
                 float[] hsb = Color.RGBtoHSB(red, green, blue, null);
-                 //Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-                float hue = hsb[0];
-                float saturation = hsb[1];
-                float brightness = hsb[2];
-               // hsb[2] = matrix_extries[]
+                float roundedBrightness_float = (float) (Math.round(hsb[2] * 100d) / 100d);
+                int roundedBrightness = (int) (roundedBrightness_float * 100);
+                
+                hsb[2] = matrix_extries[roundedBrightness];
+                // now get it back to decimal form
+                //System.out.println("before converting, it is " + hsb[2]);
+                float brightness_float = (float) hsb[2];
+                float divider = (float) 100.0;
+                float converted_brightness = brightness_float / divider;
+                int rgb = Color.HSBtoRGB(hsb[0], hsb[1], converted_brightness);
+                
+                
                 //System.out.println("x: " + x + ", y: " + y + ", value: " + matrix_extries[average] + ", original: " + average);
-              //  int rgb = matrix_extries[average] * 0x00010101;
-             //   updated_contrast_image.setRGB(x, y, rgb);
+                //int rgb = matrix_extries[average] * 0x00010101;
+                updated_contrast_image.setRGB(x, y, rgb);
                 //System.out.println("final: " + updated_contrast_image.getRGB(x, y));
 
              }
