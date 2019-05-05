@@ -16,25 +16,48 @@ public class GrayscaleBilateralFilter {
     
     public static BufferedImage ApplyGrayscaleBilateralFilter(BufferedImage input, int size)
     {
-        for (int y = size; y < input.getHeight() - size; y++) {
-            for (int x = size; x < input.getWidth() - size; x++) {
+        //System.out.println("lets go. size is " + size);
+        for (int y = 0; y < input.getHeight(); y++) {
+            for (int x = 0; x < input.getWidth(); x++) {
                 int intensitySum = 0;
-                for(int i = x - size; i < x + size; i++)
+                int numNeighbors = 0;
+                int x_new = x;
+                int y_new = y;
+                if ( x - size < 0)
                 {
-                    for(int j = y - size; j < y + size; i++)
+                    x_new = size;
+                }
+                if ( x + size > input.getWidth())
+                {
+                    x_new = input.getWidth() - size;
+                }
+                if ( y - size < 0)
+                {
+                    y_new = size;
+                }
+                if ( y + size > input.getHeight())
+                {
+                    y_new = input.getHeight() - size;
+                }
+                for(int i = x_new - size; i < x_new + size; i++)
+                {
+                    for(int j = y_new - size; j < y_new + size; j++)
                     {
-                        int  clr   = input.getRGB(x, y); 
+                       //System.out.println("x, y is " + x + ", " + y + ". i, j is " + i + ", " + j);
+                        int  clr   = input.getRGB(i, j); 
                         int  red   = (clr & 0x00ff0000) >> 16;
                         int  green = (clr & 0x0000ff00) >> 8;
                         int  blue  =  clr & 0x000000ff;
                         int average = (red + green + blue)/3;
-                        intensitySum += average;   
+                        intensitySum += average; 
+                        numNeighbors ++;
                     }   
                 }
-                double numNeighbors = size * size;
                 double intensitySumDouble = (double) intensitySum;
                 double neighborAverage = intensitySumDouble / numNeighbors;
                 int neighborAverageRounded = (int) Math.round(neighborAverage);
+                //System.out.println("total sum is " + intensitySum + ". total num is " + numNeighbors + ". double result is " + neighborAverage + ", int result is " + neighborAverageRounded);
+
                 Color average_color = new Color(neighborAverageRounded, neighborAverageRounded, neighborAverageRounded);
                 input.setRGB(x, y, average_color.getRGB());
                 }

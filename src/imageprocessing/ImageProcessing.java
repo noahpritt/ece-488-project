@@ -77,8 +77,12 @@ public class ImageProcessing extends Application {
     Image adjustedContrastImageColor;
     ImageView adjustedContrastImageViewColor;
 
+    Image bilateralGrayscaleImage;
+    ImageView bilateralGrayscaleImageView;
 
     Double contrast_amount = 1.0;
+    
+    int bilateralFilterSize = 1;
     
     boolean picAdded = false;
     Button buttonCurrent;
@@ -209,15 +213,13 @@ public class ImageProcessing extends Application {
         vbox.getChildren().add(title);
 
         Hyperlink options[] = new Hyperlink[] {
-            new Hyperlink("Make Grayscale"),
-            new Hyperlink("Grayscale Histogram Equilization"),
-            new Hyperlink("Histogram Equilization"),
-            new Hyperlink("Non-local means"),
-            new Hyperlink("Fourier Denoising"),
-            new Hyperlink("Bilateral filtering"),
-            new Hyperlink("Anti-aliasing")};
+            new Hyperlink("Make Greyscale"),
+            new Hyperlink("Greyscale Histogram Equilization"),
+            new Hyperlink("Color Histogram Equilization"),
+            new Hyperlink("Greyscale Bilateral Filter"),
+            new Hyperlink("Color Bilateral Filter")};
 
-        for (int i=0; i<7; i++) {
+        for (int i=0; i<5; i++) {
             VBox.setMargin(options[i], new Insets(0, 0, 0, 8));
             vbox.getChildren().add(options[i]);
             
@@ -553,6 +555,53 @@ public class ImageProcessing extends Application {
                 });
             }
             
+            // grayscale bilateral filter
+            if (i == 3)
+            {
+                options[i].setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent e) {
+                    type = 4;
+                    System.out.println("Greyscale bilateral filter. type is " + type);
+                    // Convert our image to a bufferedimage
+                    
+                    slider = new Slider();
+                    // The minimum value.
+                    slider.setMin(0);
+                    // The maximum value.
+                    slider.setMax(20);
+                    // Current value
+                    slider.setValue(1);
+                    slider.setShowTickLabels(true);
+                    slider.setShowTickMarks(true);
+                    slider.setBlockIncrement(10);   
+                    slider.valueProperty().addListener(new ChangeListener() {
+
+                        @Override
+                        public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+
+                        bilateralFilterSize = (int) slider.getValue();
+                        System.out.println("mah size: " + bilateralFilterSize);
+                        int filter_size_int = (int) Math.round(bilateralFilterSize);
+                        
+                        BufferedImage image_as_buffered = SwingFXUtils.fromFXImage(uploadedImage, null);
+                        BufferedImage bufferedGrayscaleImage = GrayscaleBilateralFilter.ApplyGrayscaleBilateralFilter(image_as_buffered, filter_size_int);
+                        bilateralGrayscaleImage = SwingFXUtils.toFXImage(bufferedGrayscaleImage, null);
+                        bilateralGrayscaleImageView = new ImageView(bilateralGrayscaleImage); 
+                       
+                        refreshUi(border);
+
+                    }
+                    });
+                    
+                    
+                    
+                    refreshUi(border);
+
+                }
+                });
+            }
+            
         }
 
         return vbox;
@@ -584,6 +633,7 @@ public class ImageProcessing extends Application {
     }
     
     public VBox addFlowPane() {
+        System.out.println("boo");
         image_vbox = new VBox();
         image_vbox.setPadding(new Insets(10));
         image_vbox.setSpacing(8);
@@ -667,11 +717,9 @@ public class ImageProcessing extends Application {
                 image_vbox.getChildren().addAll(adjustedContrastImageView);
             }
             
-                        
         }
         
-        
-        
+
         if (type == 3)
         {
             // output picture title
@@ -729,6 +777,33 @@ public class ImageProcessing extends Application {
             }
         
                         
+        }
+        
+        
+        if (type == 4)
+        {
+            Text filter = new Text("Insert Filter Size: (higher value has greater effect on edges)");
+            filter.setFont(Font.font("Arial", FontWeight.BOLD, 15));
+            filter.setVisible(type == 4);
+            image_vbox.getChildren().add(filter);
+            image_vbox.getChildren().addAll(slider);
+            
+            // Final image with adjusted contrast
+            if(bilateralGrayscaleImage != null )
+            {
+                Text histo_1 = new Text("Image after Bilateral Filter:");
+                histo_1.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                histo_1.setVisible(type == 4);
+                image_vbox.getChildren().add(histo_1);
+            
+                bilateralGrayscaleImageView = new ImageView(bilateralGrayscaleImage);
+                image_vbox.getChildren().addAll(bilateralGrayscaleImageView);
+            }
+            else
+            {
+                bilateralGrayscaleImageView = new ImageView(uploadedImage);
+                image_vbox.getChildren().addAll(bilateralGrayscaleImageView);
+            }     
         }
         
         
